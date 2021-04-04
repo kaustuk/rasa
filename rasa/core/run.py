@@ -26,6 +26,7 @@ from rasa.core.utils import AvailableEndpoints
 import rasa.shared.utils.io
 from sanic import Sanic
 from asyncio import AbstractEventLoop
+from sanic_prometheus import monitor
 
 logger = logging.getLogger()  # get the root logger
 
@@ -216,6 +217,10 @@ def serve_application(
     )
 
     app.register_listener(clear_model_files, "after_server_stop")
+
+    # configuring the metric endpoint
+    monitor(app).expose_endpoint()
+    logger.info("promotheus metrics endpoints `/metrics` ")
 
     rasa.utils.common.update_sanic_log_level(log_file)
     app.run(
